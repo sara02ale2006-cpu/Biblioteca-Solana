@@ -1,34 +1,54 @@
-// No imports needed: web3, anchor, pg and more are globally available
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { TiendaArte } from "../target/types/tienda_arte";
 
-describe("Test", () => {
-  it("initialize", async () => {
-    // Generate keypair for the new account
-    const newAccountKp = new web3.Keypair();
+describe("tienda-arte", () => {
 
-    // Send transaction
-    const data = new BN(42);
-    const txHash = await pg.program.methods
-      .initialize(data)
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+
+  const program = anchor.workspace.TiendaArte as Program<TiendaArte>;
+
+  const arte = anchor.web3.Keypair.generate();
+
+  it("Crear arte digital", async () => {
+
+    await program.methods
+      .crearArte(
+        "Atardecer NFT",
+        "Sara",
+        new anchor.BN(2),
+        "Arte digital estilo anime"
+      )
       .accounts({
-        newAccount: newAccountKp.publicKey,
-        signer: pg.wallet.publicKey,
-        systemProgram: web3.SystemProgram.programId,
+        arte: arte.publicKey,
+        user: provider.wallet.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
       })
-      .signers([newAccountKp])
+      .signers([arte])
       .rpc();
-    console.log(`Use 'solana confirm -v ${txHash}' to see the logs`);
 
-    // Confirm transaction
-    await pg.connection.confirmTransaction(txHash);
+    const cuenta = await program.account.arte.fetch(arte.publicKey);
 
-    // Fetch the created account
-    const newAccount = await pg.program.account.newAccount.fetch(
-      newAccountKp.publicKey
-    );
-
-    console.log("On-chain data is:", newAccount.data.toString());
-
-    // Check whether the data on-chain is equal to local 'data'
-    assert(data.eq(newAccount.data));
+    console.log("Arte creado:", cuenta);
   });
+
+  it("Actualizar arte", async () => {
+
+    await program.methods
+      .actualizarArte(
+        "Atardecer NFT v2",
+        new anchor.BN(3)
+      )
+      .accounts({
+        arte: arte.publicKey,
+        user: provider.wallet.publicKey,
+      })
+      .rpc();
+
+    const cuenta = await program.account.arte.fetch(arte.publicKey);
+
+    console.log("Arte actualizado:", cuenta);
+  });
+
 });
