@@ -1,60 +1,100 @@
-# Biblioteca en Solana
+🎨 ArtChain — Gestión de Arte Digital en Solana
 
-![banner](./images/banner-biblioteca.jpg)
+ArtChain es un programa on-chain desarrollado en Rust con Anchor Framework sobre la blockchain de Solana.
+Permite a artistas crear, gestionar y administrar sus obras de arte digital de forma descentralizada, transparente e inmutable.
 
-CRUD básico de un Solana Program desarrollado con Rust y Anchor desde el Solana Playground. 
+📌 ¿Qué hace el proyecto?
 
-Puedes comenzar dándole Fork a este repositorio (abajo te explicamos como 👇), **hemos preparado un entorno de codespaces listo para que no tengas que instalar nada**, solo déjate llevar por la fluidez de los ejercicios y temas desarrollados especialmente para ti. 
+ArtChain implementa un sistema CRUD completo para administrar arte digital:
 
-Asegúrate de clonar este repositorio a tu cuenta usando el botón **`Fork`**.
+Crear una galería de arte vinculada a tu wallet (owner)
 
-![fork](./images/fork.png)
+Registrar obras de arte con título, autor y precio
 
-## Importando el proyecto 
+Eliminar obras cerrando su cuenta en la blockchain
 
-Ya con el repositorio en tu cuenta lo siguiente que debes hacer copiar el `enlace de tu repositorio`, lo que se puede hacer directamente desdel navegador:
+Activar o desactivar una obra (ej: obra en venta o no disponible)
 
-![repo](./images/repo.png)
-Posteriormente, lo uniremos con el siguiente enlace en nuestro navegador de preferencia:
+Actualizar el precio o información de la obra
 
-```url
-https://beta.solpg.io/
-```
+Cada galería y cada obra de arte son cuentas derivadas (PDA) únicas en Solana, lo que garantiza que:
 
-Lo que nos dará algo parecido a:
+No puede haber obras duplicadas
 
-![url](./images/url.png)
+Solo el owner autorizado puede modificarlas
 
-Al pulsar enter seremos enviados al `Solana Playground` con nuestro proyecto abierto:
+🏗️ Arquitectura
+Owner (Wallet)
+    │
+    └── Galería (PDA)
+            │
+            ├── Obra A (PDA)
+            ├── Obra B (PDA)
+            └── Obra C (PDA)
+📦 Structs principales
+Galeria
+Campo	Tipo	Descripción
+owner	Pubkey	Wallet del artista
+nombre	String	Nombre de la galería
+obras	Vec<Pubkey>	Lista de PDAs de obras
+Obra
+Campo	Tipo	Descripción
+galeria	String	Nombre de la galería
+titulo	String	Título de la obra
+precio	u64	Precio del arte digital
+disponible	bool	Estado de venta de la obra
+⚙️ Instrucciones (Funciones del programa)
+Instrucción	Descripción
+crear_galeria(nombre)	Crea la cuenta de la galería vinculada al artista
+registrar_obra(titulo, precio)	Registra una nueva obra de arte digital
+eliminar_obra(titulo)	Elimina una obra y cierra su cuenta
+alternar_disponibilidad(titulo)	Activa o desactiva la venta de la obra
+actualizar_precio(titulo, precio)	Actualiza el precio de la obra
+🔐 PDAs (Program Derived Addresses)
 
-![pg](./images/pg.png)
+Las cuentas se derivan con los siguientes seeds:
 
-Para guardarlo solo damos clic en el boton `import` y asignamos un nombre:
+Galería:
 
-![import](./images/import.png)
+["galeria", nombre_galeria, owner_pubkey]
 
-## Preparacion del entorno
+Obra:
 
-Primero conectaremos el entorno con la devnet, lo que tambien procederá a la creación de una wallet. Para eso daremos clic en donde dice **Not Conected**:
+["obra", titulo_obra, owner_pubkey]
 
-![playground1](./images/playground1.png)
+Esto garantiza que:
 
-Saldrá la siguiente ventana donde daremos en el botón **Continue**:
+Cada artista tiene su propia galería única
 
-![wallet](./images/wallet.png)
+No pueden existir dos obras con el mismo título en la misma galería
 
-Como resultado se mostrará la siguiente información:
+🚀 Cómo usar el proyecto (Solana Playground)
 
-![status](./images/status.png)
+Abre Solana Playground
 
-* En verde: el estado de la conexión y el entorno al que se encuentra conectado
+Haz fork de este repositorio o pega el contenido de src/lib.rs
 
-* En amarillo: la la dirección de la wallet conectada
+Conecta tu wallet (devnet)
 
-* En azul: la cantidad de tokens en la wallet
+Haz clic en Build y luego Deploy
 
-> ℹ️ ¿Quieres ver el ejemplo de un "Hola Mundo" en Solana?. Da clic aquí: 👉 [Ver Ejemplo](https://github.com/WayLearnLatam/Solana-starter-kit/tree/1fc6349ba63375a3fe223d8d56911bc64765459b/build-deploy)
+Usa el panel Test para interactuar con el programa
 
-> ℹ️ ¿Cuentas con una Wallet de [Phantom](https://phantom.com/) que deseas importar?, Da clic aquí para ver como hacerlo: 
+Ejemplo de flujo
+1. crear_galeria("ArteSara")
+2. registrar_obra("Atardecer Digital", 2)
+3. alternar_disponibilidad("Atardecer Digital") → obra no disponible
+4. actualizar_precio("Atardecer Digital", 5) → nuevo precio
+5. eliminar_obra("Atardecer Digital") → elimina la obra
+🛠️ Tecnologías
 
-👉 [Como Importar una Wallet](https://github.com/WayLearnLatam/Solana-starter-kit/tree/1fc6349ba63375a3fe223d8d56911bc64765459b/import-key-a-playground)
+Solana — Blockchain de alta velocidad
+
+Anchor Framework — Framework para programas Solana en Rust
+
+Rust — Lenguaje del programa on-chain
+
+👤 Autor
+
+Proyecto desarrollado como parte de la certificación de Solana.
+Autor: Sarahi De Jesús 🎨🚀
